@@ -69,7 +69,11 @@ type AppDataContextValue = {
 };
 
 export const AppDataContext = createContext<AppDataContextValue | null>(null);
-
+/**
+ * Central data provider for the application.
+ * Manages state for Projects, Zones, Scans, Runs, Dashboard, and Reports.
+ * Handles real-time updates via WebSockets and exposes methods to modify data.
+ */
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<AppData>({ scans: [], areas: [], runs: [] });
   const [isLoading, setIsLoading] = useState(true);
@@ -88,7 +92,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   const wsRef = useRef<WebSocket | null>(null);
   const LS_PROJECT = "constrack_project";
-
+  /**
+ * Fetches all data for the active project from the backend.
+ * Runs in parallel: Zones, Scans, Runs, Dashboard, Reports.
+ */
   async function loadAll(projectId: string) {
     const [zones, scans, runs, dash, reps] = await Promise.all([
       fetchZones(projectId),
@@ -152,7 +159,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       }))
     );
   }
-
+ // Initial load: Fetch project list and select active project (from localStorage or default)
   useEffect(() => {
     (async () => {
       try {
@@ -167,7 +174,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       }
     })();
   }, []);
-
+  // Effect: When activeProjectId changes, load data and setup WebSocket connection
   useEffect(() => {
     if (!activeProjectId) return;
     localStorage.setItem(LS_PROJECT, activeProjectId);
