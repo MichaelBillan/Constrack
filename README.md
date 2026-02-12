@@ -2,6 +2,8 @@
 ## 3D Point-Cloud Volume Change Monitoring System
 
 **Visit Website:** https://construction-tracker-teal.vercel.app/
+**Username:** GeneralU
+**Password:** 123456
 
 ---
 
@@ -174,11 +176,11 @@ This project showcases:
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Authors
 
-Michael Billan  
-Software Engineering Student  
-Backend & Systems-Oriented Engineer
+Michael Billan & Foad Abbas
+Software Engineering Students
+Backend & Systems-Oriented Engineers
 
 ---
 
