@@ -3,7 +3,17 @@ import path from "path";
 import PDFDocument from "pdfkit";
 import ExcelJS from "exceljs";
 import type { RunDoc, ZoneDoc } from "./models.js";
-
+/**
+ * Generates a PDF report for a specific run.
+ * 
+ * Creates a PDF file containing the run metadata, key metrics (volumes, progress),
+ * and a breakdown of progress per zone.
+ * 
+ * @param reportDir - The directory where the report file will be saved.
+ * @param run - The run document containing the analysis results.
+ * @param zones - List of all zone documents to map IDs to names.
+ * @returns {Promise<string>} The absolute path to the generated PDF file.
+ */
 export async function generatePdf(reportDir: string, run: RunDoc, zones: ZoneDoc[]) {
   fs.mkdirSync(reportDir, { recursive: true });
   const runId = String((run as any)._id);
@@ -56,7 +66,17 @@ export async function generatePdf(reportDir: string, run: RunDoc, zones: ZoneDoc
 
   return outPath;
 }
-
+/**
+ * Generates an Excel (XLSX) report for a specific run.
+ * 
+ * Creates a spreadsheet with two sheets: 'Summary' (run metadata and aggregate metrics)
+ * and 'Zones' (detailed breakdown of metrics per zone).
+ * 
+ * @param reportDir - The directory where the report file will be saved.
+ * @param run - The run document containing the analysis results.
+ * @param zones - List of all zone documents to map IDs to names.
+ * @returns {Promise<string>} The absolute path to the generated XLSX file.
+ */
 export async function generateXlsx(reportDir: string, run: RunDoc, zones: ZoneDoc[]) {
   fs.mkdirSync(reportDir, { recursive: true });
   const runId = String((run as any)._id);
