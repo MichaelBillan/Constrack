@@ -32,7 +32,11 @@ function isTokenExpired(token: string): boolean {
     return true; // If we can't parse, assume expired
   }
 }
-
+/**
+ * Context provider for managing user authentication state.
+ * Handles login, registration, logout, and token persistence in localStorage.
+ * Checks for token expiration on mount and auto-logs out if expired.
+ */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
