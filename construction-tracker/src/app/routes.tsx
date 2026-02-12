@@ -17,6 +17,11 @@ import { ChatHistoryPage } from "../pages/chat/ChatHistoryPage";
 import { SchedulePage } from "../pages/schedule/SchedulePage";
 import { ModelPage } from "../pages/model/ModelPage";
 
+/**
+ * Application routing configuration.
+ * Defines public routes (Auth) and protected routes (Dashboard, etc.) wrapped in Layouts.
+ */
+
 export const router = createBrowserRouter([
   {
     element: <AuthLayout />,
