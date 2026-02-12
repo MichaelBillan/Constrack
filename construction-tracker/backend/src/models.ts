@@ -1,5 +1,12 @@
 import mongoose, { Schema } from "mongoose";
+// ============================================================================
+// Project Model
+// ============================================================================
 
+/**
+ * Represents a construction project.
+ * A project is the top-level container for all zones, scans, and runs.
+ */
 export type ProjectDoc = {
   name: string;
   createdAtISO: string;
@@ -17,8 +24,15 @@ const ProjectSchema = new Schema<ProjectDoc>(
 
 export const ProjectModel = mongoose.model<ProjectDoc>("Project", ProjectSchema);
 
-export type ZoneType = "site" | "floor" | "wing" | "zone";
+// ============================================================================
+// Zone Model
+// ============================================================================
 
+export type ZoneType = "site" | "floor" | "wing" | "zone";
+/**
+ * Represents a specific area within a project.
+ * Zones are hierarchical: Site -> Building -> Floor -> Zone.
+ */
 export type ZoneDoc = {
   _id: string;
   projectId: string;
@@ -44,7 +58,13 @@ const ZoneSchema = new Schema<ZoneDoc>(
 );
 
 export const ZoneModel = mongoose.model<ZoneDoc>("Zone", ZoneSchema);
+// ============================================================================
+// Run (Analysis) Model
+// ============================================================================
 
+/**
+ * Represents a single metric for a specific zone calculated during a run.
+ */
 export type ScanDoc = {
   projectId: string;
   name: string;
@@ -69,13 +89,22 @@ const ScanSchema = new Schema<ScanDoc>(
 );
 
 export const ScanModel = mongoose.model<ScanDoc>("Scan", ScanSchema);
+// ============================================================================
+// Run (Analysis) Model
+// ============================================================================
 
+/**
+ * Represents a single metric for a specific zone calculated during a run.
+ */
 export type AreaMetric = {
   zoneId: string;
   progressPct: number;
   volumeChangeM3: number;
 };
-
+/**
+ * Represents a comparison run between two scans (T1 and T2).
+ * Stores the results of the volume analysis and progress estimation.
+ */
 export type RunDoc = {
   projectId: string;
   createdAtISO: string;
@@ -122,6 +151,13 @@ const RunSchema = new Schema<RunDoc>(
 
 export const RunModel = mongoose.model<RunDoc>("Run", RunSchema);
 
+// ============================================================================
+// Report Model
+// ============================================================================
+
+/**
+ * Represents a generated report (PDF/XLSX) derived from a Run.
+ */
 export type ReportDoc = {
   projectId: string;
   runId: string;
@@ -142,7 +178,13 @@ const ReportSchema = new Schema<ReportDoc>(
 );
 
 export const ReportModel = mongoose.model<ReportDoc>("Report", ReportSchema);
+// ============================================================================
+// User Model
+// ============================================================================
 
+/**
+ * Represents a registered user of the application.
+ */
 export type UserDoc = {
   name: string;
   email: string;
