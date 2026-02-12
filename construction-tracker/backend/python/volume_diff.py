@@ -8,6 +8,19 @@ from typing import Tuple
 
 
 def _load_point_cloud(path: str):
+        """
+    Loads a point cloud file from the given path.
+    Supports .ply, .las, .laz, and .e57 formats.
+    
+    Args:
+        path (str): Absolute path to the point cloud file.
+        
+    Returns:
+        open3d.geometry.PointCloud: The loaded point cloud object.
+        
+    Raises:
+        RuntimeError: If file doesn't exist, is a directory, or has an unsupported extension.
+    """
     if not path or not isinstance(path, str):
         raise RuntimeError(f"Invalid file path value: {path!r}")
 
