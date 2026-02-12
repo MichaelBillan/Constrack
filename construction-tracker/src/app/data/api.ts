@@ -3,7 +3,14 @@ export type ApiConfig = {
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
-
+/**
+ * Generic API wrapper function.
+ * Handles authentication headers, error parsing, and auto-logout on 401.
+ * 
+ * @param path - API endpoint path (e.g. "/api/projects").
+ * @param init - Fetch options.
+ * @returns {Promise<T>} Typed response data.
+ */
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem("constrack_token");
   const headers: Record<string, string> = {
@@ -43,7 +50,9 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
   }
   return json as T;
 }
-
+/**
+ * Fetches the list of projects for the current user.
+ */
 export async function fetchProjects() {
   return api<{ id: string; name: string; createdAtISO: string }[]>("/api/projects");
 }
@@ -55,7 +64,9 @@ export async function createProject(name: string) {
     body: JSON.stringify({ name }),
   });
 }
-
+/**
+ * Fetches all zones for a given project.
+ */
 export async function fetchZones(projectId: string) {
   return api<
     {
@@ -97,13 +108,18 @@ export async function patchZoneLinks(id: string, linkedScanIds: string[]) {
 export async function deleteZone(id: string) {
   return api(`/api/zones/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
-
+/**
+ * Fetches all scans associated with a project.
+ */
 export async function fetchScans(projectId: string) {
   return api<{ id: string; name: string; sizeBytes: number; capturedAtISO: string; uploadedAtISO: string; notes?: string }[]>(
     `/api/scans?projectId=${encodeURIComponent(projectId)}`
   );
 }
-
+/**
+ * Uploads a new point cloud scan file.
+ * Uses FormData to handle the file upload.
+ */
 export async function uploadScan(projectId: string, file: File, capturedAtISO: string, notes?: string, zoneId?: string) {
   const fd = new FormData();
   fd.append("projectId", projectId);
@@ -135,7 +151,9 @@ export async function deleteScan(id: string) {
 export async function fetchRuns(projectId: string) {
   return api<any[]>(`/api/runs?projectId=${encodeURIComponent(projectId)}`);
 }
-
+/**
+ * Triggers a new volume comparison run between two scans.
+ */
 export async function createRun(projectId: string, t1ScanId: string, t2ScanId: string, voxelSize?: number) {
   return api<{ id: string; status: string }>(`/api/runs`, {
     method: "POST",
