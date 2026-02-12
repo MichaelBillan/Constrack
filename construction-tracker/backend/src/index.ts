@@ -9,8 +9,8 @@ import { WebSocketServer } from "ws";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import * as brevo from "@getbrevo/brevo";
+// Initialize Brevo client for sending transactional emails (e.g. password resets)
 
-// Initialize Brevo client
 const brevoApiInstance = new brevo.TransactionalEmailsApi();
 brevoApiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY || "");
 const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@example.com";
@@ -36,6 +36,12 @@ import crypto from "crypto";
 
 // Point cloud cache for faster repeated loads
 // Key: scanId, Value: { points, colors, timestamp }
+// Point cloud cache for faster repeated loads
+// Key: scanId, Value: { points, colors, timestamp }
+/**
+ * In-memory cache for parsed point cloud data.
+ * Used to avoid re-parsing large LAS/E57 files when multiple users or sessions request the same data.
+ */
 interface CacheEntry {
   points: number[][];
   colors?: number[][];
@@ -81,6 +87,11 @@ function getFromCache(scanId: string): CacheEntry | undefined {
 }
 
 // JWT validation middleware
+/**
+ * Middleware to authenticate requests using JWT.
+ * Verifies the 'Authorization' header and attaches the user payload to the request object.
+ * Returns 401 if token is missing, or 403 if invalid.
+ */
 function authenticateToken(req: express.Request, res: express.Response, next: express.NextFunction) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
@@ -140,13 +151,23 @@ function forecastDateISO(overallProgressPct: number) {
   d.setDate(d.getDate() + Math.max(0, daysLeft));
   return d.toISOString();
 }
-
+/**
+ * Ensures a demo project exists (Legacy function).
+ * In the current multi-user architecture, this is largely a placeholder or used for system-wide defaults.
+ */
 async function ensureDemoProject() {
   // In production with user auth, we no longer create a demo project
   // Each user creates their own projects
   return "";
 }
-
+/**
+ * Spawns a Python subprocess to calculate the volume difference between two scans.
+ * 
+ * @param t1Path - File path of the first scan (baseline).
+ * @param t2Path - File path of the second scan (comparison).
+ * @param voxelSize - Voxel size in meters for volume estimation.
+ * @returns {Promise<{ volumeT1M3: number; volumeT2M3: number; volumeChangeM3: number }>}
+ */
 async function runPythonVolumeDiff(t1Path: string, t2Path: string, voxelSize: number) {
   const py = process.env.PYTHON_BIN || "python3";
   const script = path.join(ROOT, "python", "volume_diff.py");
@@ -178,7 +199,13 @@ async function runPythonVolumeDiff(t1Path: string, t2Path: string, voxelSize: nu
     });
   });
 }
-
+/**
+ * Spawns a Python subprocess to extract a subset of points for visualization.
+ * 
+ * @param filePath - Path to the point cloud file.
+ * @param maxPoints - Maximum number of points to return (default 350,000).
+ * @returns {Promise<{ points: number[][]; colors?: number[][] }>}
+ */
 async function runPythonExtractPoints(filePath: string, maxPoints: number = 350000) {
   const py = process.env.PYTHON_BIN || "python3";
   const script = path.join(ROOT, "python", "volume_diff.py");
@@ -229,7 +256,10 @@ async function getLeafZones(projectId: string): Promise<(ZoneDoc & { _id: unknow
   }
   return zones.filter((z) => !hasChild.has(String(z._id)));
 }
-
+/**
+ * Main application entry point.
+ * Connects to DB, configures Express, defines routes, and starts the server.
+ */
 async function main() {
   await connectDb();
   const demoProjectId = await ensureDemoProject();
